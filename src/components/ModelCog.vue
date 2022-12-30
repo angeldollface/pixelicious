@@ -91,9 +91,13 @@ export default defineComponent(
         // populate with meshes from the loaded model.
         let name: any;
 
+        let lightOne: any;
+        let lightTwo: any;
+        let lightThree: any;
+
         // Closure to load a model from a path (remote or local).
         loader.load(
-          'https://angeldollface.art/assets/models/AngelDollFace.glb',
+          'https://angeldollface.art/assets/models/neonLightsExp.glb',
           function(gltf){
             // Model size.
             gltf.scene.scale.set( 1, 1, 1 );
@@ -112,6 +116,23 @@ export default defineComponent(
             name.material.emissive = new THREE.Color(0xEA1573);
             name.material.emissiveIntensity = defaultEmissiveIntensity;
 
+            // Getting the light meshes and making them glow.
+
+            // Top border light.
+            lightOne = gltf.scene.getObjectByName('Light01');
+            lightOne.material.emissive = new THREE.Color(0xFFFFFF);
+            lightOne.material.emissiveIntensity = borderLightIntensity;
+
+            // Right border light.
+            lightTwo = gltf.scene.getObjectByName('Light02');
+            lightTwo.material.emissive = new THREE.Color(0xFFFFFF);
+            lightTwo.material.emissiveIntensity = borderLightIntensity;
+
+            // Left border light.
+            lightThree = gltf.scene.getObjectByName('Light03');
+            lightThree.material.emissive = new THREE.Color(0xFFFFFF);
+            lightThree.material.emissiveIntensity = borderLightIntensity;
+
             // We call the animation function
             // otherwise nothing happens.
             animate();
@@ -119,13 +140,19 @@ export default defineComponent(
         );
 
         // We set up the camera position.
-        camera.position.set(0,0.5,3);
+        camera.position.set(0,1.5,3);
 
         // Setting the rotation.
-        camera.rotation.set(0,-0.2,0);
+        camera.rotation.set(0,0,0);
 
         // The default setting for the intensitivity of the text glow.
         const defaultEmissiveIntensity:number = 6;
+
+        // Intensity of the border lights.
+        const borderLightIntensity: number = 10;
+
+        // Default rotation speed.
+        const rotationSpeed: number = 0.07;
 
         // And animate the whole scene
         // recursively.
@@ -138,12 +165,18 @@ export default defineComponent(
             resize 
           );
 
-          // Making the glowing text blink.
-          blinkLights();
-
           // Re-renders the scene on
           // every frame bounce.
           composer.render();
+
+          // Rotating the top light.
+          lightOne.rotation.y += rotationSpeed;
+
+          // Rotating the right border light.
+          lightTwo.rotation.x += rotationSpeed;
+
+          // Rotating the left border light.
+          lightThree.rotation.x += rotationSpeed;
 
           // The "frame bounce".
           requestAnimationFrame(animate);
@@ -152,6 +185,12 @@ export default defineComponent(
         // Defining a nested function to adjust some renderer
         // and camera settings.
         const resize = () => {
+          if (window.innerWidth < 800){
+            camera.position.z = 10;
+          }
+          else {
+            // Do nothing.
+          }
           renderer.setPixelRatio(window.devicePixelRatio);
           renderer.setSize(window.innerWidth, window.innerHeight);
           camera.aspect = window.innerWidth / window.innerHeight;
@@ -159,14 +198,6 @@ export default defineComponent(
           composer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        const blinkLights = () => {
-          if (name.material.emissiveIntensity === 0){
-            name.material.emissiveIntensity = defaultEmissiveIntensity;
-          }
-          else {
-            name.material.emissiveIntensity = 0;
-          }
-        }
       }
     },
     mounted() {
