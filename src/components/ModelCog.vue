@@ -97,7 +97,7 @@ export default defineComponent(
 
         // Closure to load a model from a path (remote or local).
         loader.load(
-          'https://angeldollface.art/assets/models/neonLightsExp.glb',
+          'https://angeldollface.art/doll-cdn/models/neonLightsExp.glb',
           function(gltf){
             // Model size.
             gltf.scene.scale.set( 1, 1, 1 );
